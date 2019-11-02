@@ -13,14 +13,26 @@ const forecast = (latitude, longitude, callback) => {
          callback("Unable to find location!", undefined);
       } else {
          const summary = body.daily.data[0].summary;
-         const temperature = body.currently.temperature;
+         const temperature = Math.ceil(
+            ((body.currently.temperature - 32) * 5) / 9
+         );
          const precipProbability = body.currently.precipProbability;
+         const temperatureHigh = Math.ceil(
+            ((body.daily.data[0].temperatureHigh - 32) * 5) / 9
+         );
+         const temperatureLow = Math.ceil(
+            ((body.daily.data[0].temperatureLow - 32) * 5) / 9
+         );
          callback(
             undefined,
             summary +
                " It is currently " +
-               Math.ceil(((temperature - 32) * 5) / 9) +
-               " degrees out. There is a " +
+               temperature +
+               " degrees out. This high today is " +
+               temperatureHigh +
+               " with a low of " +
+               temperatureLow +
+               ". There is a " +
                precipProbability +
                "% chance of rain."
          );
