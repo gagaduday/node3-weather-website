@@ -19,7 +19,7 @@ const forecast = (latitude, longitude, callback) => {
             undefined,
             summary +
                " It is currently " +
-               temperature +
+               Math.ceil(((temperature - 32) * 5) / 9) +
                " degrees out. There is a " +
                precipProbability +
                "% chance of rain."
