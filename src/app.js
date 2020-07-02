@@ -22,83 +22,100 @@ hbs.registerPartials(partialsPath);
 app.use(express.static(publicDirectoryPath));
 
 app.get("", (req, res) => {
-   res.render("index", {
-      title: "Weather",
-      name: "Minatozaki Sana"
-   });
+	res.render("index", {
+		title: "Weather",
+		name: "Minatozaki Sana",
+	});
 });
 
 app.get("/about", (req, res) => {
-   res.render("about", {
-      title: "About me",
-      name: "Minatozaki Sana"
-   });
+	res.render("about", {
+		title: "About me",
+		name: "Minatozaki Sana",
+	});
 });
 
 app.get("/help", (req, res) => {
-   res.render("help", {
-      title: "Help page",
-      name: "Minatozaki Sana",
-      helpText: "This is some helpful text."
-   });
+	res.render("help", {
+		title: "Help page",
+		name: "Minatozaki Sana",
+		helpText: "This is some helpful text.",
+	});
 });
 
 app.get("/weather", (req, res) => {
-   if (!req.query.address) {
-      return res.send({
-         error: "You must provide an address"
-      });
-   }
+	if (!req.query.address) {
+		return res.send({
+			error: "You must provide an address",
+		});
+	}
 
-   geocode(
-      req.query.address,
-      (error, { latitude, longitude, location } = {}) => {
-         if (error) {
-            res.send({ error });
-         }
+	geocode(
+		req.query.address,
+		(error, { latitude, longitude, location } = {}) => {
+			if (error) {
+				res.send({ error });
+			}
 
-         forecast(latitude, longitude, (error, forecastData) => {
-            if (error) {
-               res.send({ error });
-            }
-            res.send({
-               location,
-               forecast: forecastData,
-               address: req.query.address
-            });
-         });
-      }
-   );
+			forecast(latitude, longitude, (error, forecastData) => {
+				if (error) {
+					res.send({ error });
+				}
+				res.send({
+					location,
+					forecast: forecastData,
+					address: req.query.address,
+				});
+			});
+		}
+	);
+});
+
+app.get("/weather-auto", (req, res) => {
+	if (!req.query.latitude || !req.query.longitude) {
+		return res.send({
+			error: "Error getting location",
+		});
+	}
+
+	forecast(req.query.latitude, req.query.longitude, (error, forecastData) => {
+		if (error) {
+			res.send({ error });
+		}
+		res.send({
+			forecast: forecastData,
+		});
+	});
 });
 
 app.get("/products", (req, res) => {
-   if (!req.query.search) {
-      return res.send({
-         error: "You must provide a search term"
-      });
-   }
-   console.log(req.query.search);
-   res.send({
-      products: []
-   });
+	if (!req.query.search) {
+		return res.send({
+			error: "You must provide a search term",
+		});
+	}
+	console.log(req.query.search);
+	res.send({
+		products: [],
+	});
 });
 
 app.get("/help/*", (req, res) => {
-   res.render("404", {
-      title: "404",
-      name: "Minatozaki Sana",
-      errorMessage: "Help article not found"
-   });
+	res.render("404", {
+		title: "404",
+		name: "Minatozaki Sana",
+		errorMessage: "Help article not found",
+	});
 });
 
 app.get("*", (req, res) => {
-   res.render("404", {
-      title: "404",
-      name: "Minatozaki Sana",
-      errorMessage: "Page not found"
-   });
+	res.render("404", {
+		title: "404",
+		name: "Minatozaki Sana",
+		errorMessage: "Page not found",
+	});
 });
 
 app.listen(port, () => {
-   console.log("Server is up on port " + port);
+	console.log("Server is up on port " + port);
 });
