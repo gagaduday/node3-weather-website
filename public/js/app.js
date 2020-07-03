@@ -28,27 +28,42 @@ manualButton.addEventListener("click", (e) => {
 automaticButton.addEventListener("click", (e) => {
 	e.preventDefault();
 
+	messageOne.textContent = "Loading...";
+	messageTwo.textContent = "";
+
 	let longitude = 0;
 	let latitude = 0;
 
 	window.navigator.geolocation.getCurrentPosition(
 		(position) => {
-			longitude = position.coords.longitude;
 			latitude = position.coords.latitude;
+			longitude = position.coords.longitude;
 
-			fetch(
-				"/weather-auto?latitude=" + latitude + "&longitude=" + longitude
-			).then((response) => {
-				response.json().then((data) => {
-					if (data.error) {
-						messageOne.textContent = data.error;
-					} else {
-						messageOne.textContent = "";
-						messageTwo.textContent = data.forecast;
-					}
-				});
+			fetchLocationAndWeather(latitude, longitude).then((data) => {
+				messageOne.textContent = data.locationData.placeName;
+				messageTwo.textContent = data.weatherData.forecast;
 			});
 		},
-		(error) => console.log(error)
+		(error) => {
+			messageOne.textContent = error.message;
+		}
 	);
 });
+
+const fetchLocationAndWeather = async (latitude, longitude) => {
+	const locationResponse = await fetch(
+		"/location-auto?latitude=" + latitude + "&longitude=" + longitude
+	);
+
+	const weatherResponse = await fetch(
+		"/weather-auto?latitude=" + latitude + "&longitude=" + longitude
+	);
+
+	const locationData = await locationResponse.json();
+	const weatherData = await weatherResponse.json();
+
+	return {
+		locationData,
+		weatherData,
+	};
+};

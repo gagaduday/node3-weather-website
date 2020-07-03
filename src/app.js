@@ -3,6 +3,7 @@ const express = require("express");
 const hbs = require("hbs");
 
 const geocode = require("./utils/geocode");
+const geocodeReverse = require("./utils/geocodeReverse");
 const forecast = require("./utils/forecast");
 
 const app = express();
@@ -88,13 +89,33 @@ app.get("/weather-auto", (req, res) => {
 	});
 });
 
+app.get("/location-auto", (req, res) => {
+	if (!req.query.latitude || !req.query.longitude) {
+		return res.send({
+			error: "Error getting location",
+		});
+	}
+
+	geocodeReverse(
+		req.query.latitude,
+		req.query.longitude,
+		(error, { placeName } = {}) => {
+			if (error) {
+				res.send({ error });
+			}
+			res.send({
+				placeName,
+			});
+		}
+	);
+});
+
 app.get("/products", (req, res) => {
 	if (!req.query.search) {
 		return res.send({
 			error: "You must provide a search term",
 		});
 	}
-	console.log(req.query.search);
 	res.send({
 		products: [],
 	});
